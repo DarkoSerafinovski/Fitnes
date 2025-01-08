@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import Navigation from './Navigation';
 import './MuscleExercises.css';
 
@@ -22,10 +22,18 @@ const MuscleExercises = () => {
   const { muscleGroupId } = useParams();
   const [filteredExercises, setFilteredExercises] = useState([]);
   const [selectedType, setSelectedType] = useState('All');
+  const [isTrainer, setIsTrainer] = useState(true);
+  const navigate = useNavigate();  // Umesto useHistory
 
   useEffect(() => {
     if (muscleGroupId && exercisesData[muscleGroupId]) {
       setFilteredExercises(exercisesData[muscleGroupId]);
+    }
+
+    // Provera uloge iz sessionStorage
+    const role = sessionStorage.getItem('role');
+    if (role === 'trener') {
+      setIsTrainer(true);
     }
   }, [muscleGroupId]);
 
@@ -36,6 +44,10 @@ const MuscleExercises = () => {
   const filteredData = selectedType === 'All' 
     ? filteredExercises 
     : filteredExercises.filter(exercise => exercise.type === selectedType);
+
+  const handleAddExercise = () => {
+    navigate('/dodaj-vezbu');  // Redirektovanje na stranicu za dodavanje vežbe
+  };
 
   return (
     <>
@@ -54,6 +66,9 @@ const MuscleExercises = () => {
 
         <div className="exercises-list">
           <h1>Vežbe za Grupu Mišića</h1>
+          {isTrainer && (
+            <button className="add-exercise-btn" onClick={handleAddExercise}>Dodaj Vezbu</button>
+          )}
           <div className="exercise-cards">
             {filteredData.map((exercise) => (
               <div key={exercise.id} className="exercise-card">

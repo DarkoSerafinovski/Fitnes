@@ -1,0 +1,134 @@
+/* General styles */
+.youtube-page {
+    padding: 2rem;
+    text-align: center;
+    background-color: #f9f9f9;
+  }
+  
+ .youtube-page h1 {
+    font-size: 2rem;
+    color: #333 !important;
+    margin-bottom: 2rem;
+  }
+  
+  /* Searchbar styles */
+  .searchbar-container {
+    margin-bottom: 2rem;
+    width: 80vw;
+  }
+  
+  .searchbar-input {
+    padding: 0.8rem;
+    width: 60%;
+    margin: 0 auto;
+    font-size: 1.1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .searchbar-button {
+    padding: 0.8rem;
+    margin: 0 auto;
+    width: 20%;
+    background-color: #ff0000;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .searchbar-button:hover {
+    background-color: #cc0000;
+  }
+  
+  /* Video Results styles */
+  .video-results {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  
+  /* Video Card styles */
+  .video-card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    height: auto;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .video-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+  
+  .video-thumbnail {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    background-color: #f0f0f0;
+  }
+  
+  .video-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: 1rem;
+    color: #333;
+  }
+  
+  .video-description {
+    font-size: 1rem;
+    color: #555;
+    margin: 0 1rem 1rem;
+  }
+  
+  /* Loading Placeholder styles */
+  .placeholder-card {
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    animation: pulse 1.5s infinite ease-in-out;
+  }
+  
+  .placeholder-thumbnail {
+    width: 100%;
+    height: 180px;
+    background-color: #ccc;
+  }
+  
+  .placeholder-title,
+  .placeholder-description {
+    height: 20px;
+    background-color: #ccc;
+    margin: 1rem;
+    border-radius: 4px;
+  }
+  
+  .placeholder-title {
+    width: 80%;
+  }
+  
+  .placeholder-description {
+    width: 90%;
+  }
+  
+  /* Pulse animation for placeholders */
+  @keyframes pulse {
+    0% {
+      background-color: #ccc;
+    }
+    50% {
+      background-color: #e0e0e0;
+    }
+    100% {
+      background-color: #ccc;
+    }
+  }
+  

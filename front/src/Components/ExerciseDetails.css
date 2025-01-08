@@ -18,10 +18,10 @@ body {
   
   
   /* Exercise Details */
-  h1 {
+  .exercise-details-container h1 {
     font-size: 36px;
     font-weight: bold;
-    color: #2a2a2a;
+    color: #2a2a2a !important;
     text-align: center;
     margin-bottom: 20px;
   }

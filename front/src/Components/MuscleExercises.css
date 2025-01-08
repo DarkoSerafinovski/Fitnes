@@ -51,7 +51,7 @@
   .exercises-list h1 {
     font-size: 2rem;
     margin-bottom: 30px;
-    color: #333;
+    color: #333 !important;
     text-align: center;
   }
   
@@ -116,5 +116,26 @@
   
   .details-link:hover {
     text-decoration: underline;
+  }
+  
+  .add-exercise-btn {
+    background-color: #28a745;
+    color: white;
+    font-size: 1.1em;
+    font-weight: bold;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 20px;
+  }
+  
+  .add-exercise-btn:hover {
+    background-color: #218838;
+  }
+  
+  .add-exercise-btn:focus {
+    outline: none;
   }
   
