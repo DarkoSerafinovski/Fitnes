@@ -36,6 +36,7 @@ const Navigation = ({ role = 'Vezbac' }) => {  // Default role is Vezbac
               <li><Link to="/kreiraj-plan">Sastavi Plan</Link></li>
               <li><Link to="/moj-dnevnik">Moj Dnevnik</Link></li>
               <li><Link to="/dodaj-dnevnik">Dodaj Novi Dnevnik</Link></li>
+              <li><Link to="/planovi">Planovi</Link></li>
               <li><Link to="/youtube">YouTube</Link></li>
             </>
           )}

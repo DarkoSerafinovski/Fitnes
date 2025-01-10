@@ -16,6 +16,7 @@ import DodajNoviDnevnik from './Components/DodajNoviDnevnik';
 import DnevnikDetails from './Components/DnevnikDetails';
 import DodajAktivnost from './Components/DodajAktivnost';
 import YouTube from './Components/Youtube';
+import PlansPage from './Components/PlansPage';
 
 
 function App() {
@@ -38,6 +39,7 @@ function App() {
           <Route path="/dnevnik/:dnevnikId" element={<DnevnikDetails />} />
           <Route path="/dodaj-aktivnost/:dnevnikId" element={<DodajAktivnost />} />
           <Route path="/youtube" element={<YouTube />} /> 
+          <Route path="/planovi" element={<PlansPage />} /> 
         </Routes>
       </div>
     </Router>
