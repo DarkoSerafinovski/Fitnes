@@ -20,6 +20,8 @@ class VezbaResource extends JsonResource
             'opis' => $this->opis,
             'misici_na_koje_utice'=>$this->misici_na_koje_utice,
             'savet'=>$this->savet,
+            'preporuceni_broj_serija'=>$this->preporuceni_broj_serija,
+            'preporuceni_broj_ponavljanja'=>$this->preporuceni_broj_ponavljanja,
             'video_url' => route('vezba.video', ['id' => $this->id]),
             'kategorija'=>new KategorijaVezbeResource($this->kategorija),
         ];

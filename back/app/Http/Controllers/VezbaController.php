@@ -103,6 +103,8 @@ class VezbaController extends Controller
                 'opis' => 'required|string',
                 'misici_na_koje_utice' => 'required|string',
                 'savet'=>'required|string',
+                'preporuceni_broj_ponavljanja'=>'required|numeric',
+                'preporuceni_broj_serija'=>'required|numeric',
                 'video' => 'required|mimes:mp4',
                 'grupa_misica_id' => 'required|exists:grupe_misica,id',
                 'kategorija_id' => 'required|exists:kategorije_vezba,id',
@@ -116,6 +118,8 @@ class VezbaController extends Controller
                 'misici_na_koje_utice'=>$validated['misici_na_koje_utice'],
                 'savet'=>$validated['savet'],
                 'grupa_misica_id'=>$validated['grupa_misica_id'],
+                'preporuceni_broj_serija'=>$validated['preporuceni_broj_serija'],
+                'preporuceni_broj_ponavljanja'=>$validated['preporuceni_broj_ponavljanja'],
                 'trener_id'=>$korisnikId,
                 'kategorija_id'=>$validated['kategorija_id'],
                 'video_url'=>$this->upload($request->file('video'), $validated['naziv'])
@@ -149,6 +153,8 @@ class VezbaController extends Controller
                 'misici_na_koje_utice' => 'required|string',
                 'savet'=>'required|string',
                 'video' => 'nullable|mimes:mp4',
+                'preporuceni_broj_ponavljanja'=>'required|numeric',
+                'preporuceni_broj_serija'=>'required|numeric',
                 'grupa_misica_id' => 'required|exists:grupe_misica,id',
                 'kategorija_id' => 'required|exists:kategorije_vezba,id',
             ]);
@@ -164,6 +170,8 @@ class VezbaController extends Controller
             $vezba->savet = $validated['savet'];
             $vezba->grupa_misica_id = $validated['grupa_misica_id'];
             $vezba->kategorija_id = $validated['kategorija_id'];
+            $vezba->preporuceni_broj_serija = $validated['preporuceni_broj_serija'];
+            $vezba->preporuceni_broj_ponavljanja = $validated['preporuceni_broj_ponavljanja'];
     
             
             if ($request->hasFile('video')) {
@@ -178,7 +186,7 @@ class VezbaController extends Controller
             $vezba->save();
     
             return response()->json([
-                'message' => 'Podkast je uspešno izmenjen!',
+                'message' => 'Vezba je uspešno izmenjena!',
                 'data' => $vezba
             ], 200);
 

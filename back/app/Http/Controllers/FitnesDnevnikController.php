@@ -63,7 +63,8 @@ class FitnesDnevnikController extends Controller
 
             $validated = $request->validate([
                 'kratak_opis' => 'required|string',
-                'slika' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',  
+                'slika' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', 
+               
             ]);
 
             $korisnikId = $user->id;
@@ -120,13 +121,14 @@ class FitnesDnevnikController extends Controller
             $validated = $request->validate([
                 'naziv_aktivnosti' => 'required|string',
                 'komentar' => 'required|string', 
+                'datum'=>'required|date', 
             ]);
 
           
 
             $stavka = StavkaDnevnika::create([
                 'dnevnik_id'=>$id,
-                'datum'=>now(),
+                'datum'=>$validated['datum'],
                 'naziv_aktivnosti'=>$validated['naziv_aktivnosti'],
                 'komentar'=>$validated['komentar'],
             ]);

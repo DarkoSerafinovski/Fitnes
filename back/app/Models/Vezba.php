@@ -14,6 +14,8 @@ class Vezba extends Model
         'opis',
         'misici_na_koje_utice',
         'savet',
+        'preporuceni_broj_serija',
+        'preporuceni_broj_ponavljanja',
         'video_url',
         'grupa_misica_id',
         'kategorija_id',

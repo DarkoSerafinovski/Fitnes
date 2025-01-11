@@ -26,6 +26,8 @@ class VezbaFactory extends Factory
             'opis' => $this->faker->paragraph,
             'misici_na_koje_utice' => $this->faker->sentence,
             'savet'=>$this->faker->sentence,
+            'preporuceni_broj_ponavljanja' => $this->faker->numberBetween(1, 5),
+            'preporuceni_broj_serija'=>$this->faker->numberBetween(8, 15),
             'video_url' => $this->faker->url .'mp4',
             'grupa_misica_id' => GrupaMisica::inRandomOrder()->first()->id,
             'kategorija_id'=>KategorijaVezbe::inRandomOrder()->first()->id,

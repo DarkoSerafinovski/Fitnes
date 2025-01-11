@@ -17,6 +17,8 @@ return new class extends Migration
             $table->text('opis');
             $table->text('misici_na_koje_utice');
             $table->text('savet');
+            $table->integer('preporuceni_broj_serija');
+            $table->integer('preporuceni_broj_ponavljanja');
             $table->string('video_url');
             $table->foreignId('grupa_misica_id')->constrained('grupe_misica')->onDelete('cascade');
             $table->foreignId('kategorija_id')->constrained('kategorije_vezba')->onDelete('cascade');

@@ -13,7 +13,7 @@ class FitnesDnevnik extends Model
     protected $fillable = [
         'vezbac_id',
         'slika',
-        'kratak_opis'
+        'kratak_opis',
     ];
 
 
