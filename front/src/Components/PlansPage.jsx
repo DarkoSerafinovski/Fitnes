@@ -1,8 +1,11 @@
 import React from 'react';
 import './PlansPage.css';
 import Navigation from './Navigation';
+import { useNavigate } from 'react-router-dom';
 
 const PlansPage = () => {
+  const navigate = useNavigate();
+
   // Simulacija planova korisnika
   const userPlans = [
     {
@@ -39,27 +42,24 @@ const PlansPage = () => {
 
   return (
     <>
-        <Navigation/>
-        <div className="plans-page">
+      <Navigation />
+      <div className="plans-page">
         <h1>Vaši planovi</h1>
         <div className="plans-container">
-            {userPlans.map((plan) => (
+          {userPlans.map((plan) => (
             <div key={plan.id} className="plan-card">
-                <h2>{plan.name}</h2>
-                <p><strong>Datum:</strong> {plan.date}</p>
-                <div className="exercises-list">
-                {plan.exercises.map((exercise, index) => (
-                    <div key={index} className="exercise-item">
-                    <p><strong>Vežba:</strong> {exercise.name}</p>
-                    <p><strong>Serije:</strong> {exercise.sets}</p>
-                    <p><strong>Ponavljanja:</strong> {exercise.reps}</p>
-                    </div>
-                ))}
-                </div>
+              <h2>{plan.name}</h2>
+              <p><strong>Datum:</strong> {plan.date}</p>
+              <p><strong>Broj vežbi:</strong> {plan.exercises.length}</p>
+              <button 
+                className="view-plan-btn" 
+                onClick={() => navigate(`/plan/${plan.id}`)}>
+                Pogledaj Plan
+              </button>
             </div>
-            ))}
+          ))}
         </div>
-        </div>
+      </div>
     </>
   );
 };
