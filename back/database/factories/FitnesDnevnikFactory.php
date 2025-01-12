@@ -1,0 +1,27 @@
+<?php
+
+namespace Database\Factories;
+
+use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\FitnesDnevnik;
+use App\Models\User;
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Model>
+ */
+class FitnesDnevnikFactory extends Factory
+{
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
+    protected $model = FitnesDnevnik::class;
+    public function definition(): array
+    {
+        return [
+            'vezbac_id'=>User::where('role', 'vezbac')->inRandomOrder()->first()->id,
+            'slika'=>$this->faker->imageUrl(640, 480, 'diary',true),
+            'kratak_opis'=>$this->faker->paragraph,
+        ];
+    }
+}
