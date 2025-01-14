@@ -11,6 +11,7 @@ const Register = () => {
     confirmPassword: "",
     role: "Vezbac", // Defaultna uloga
   });
+  const [error, setError] = useState(""); // Stanje za greške
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -19,14 +20,22 @@ const Register = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Provera da li se šifre poklapaju
     if (formData.password !== formData.confirmPassword) {
-      alert("Šifre se ne poklapaju!");
+      setError("Šifre se ne poklapaju!");
       return;
     }
-    // Ovde možete dodati logiku za slanje podataka na backend
-    console.log(formData);
-    alert("Uspešno ste se registrovali!");
-    navigate("/login");
+
+    // Resetovanje greške ako je sve u redu
+    setError("");
+
+    // Logika za registraciju (trenutno samo simulacija)
+    console.log("Podaci o registraciji:", formData);
+
+    // Prikaz poruke i preusmeravanje na login
+    alert("Uspešno ste se registrovali! Sada se možete prijaviti.");
+    navigate("/");
   };
 
   return (
@@ -74,6 +83,9 @@ const Register = () => {
           <option value="Trener">Trener</option>
           <option value="Vezbac">Vežbač</option>
         </select>
+
+        {error && <p className="error-message">{error}</p>} {/* Prikaz greške */}
+
         <button type="submit" className="register-btn">
           Registruj se
         </button>

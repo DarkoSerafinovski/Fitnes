@@ -40,7 +40,7 @@
   /* Glavni kontejner za prikaz vežbi */
   .exercises-list {
     flex: 1;
-    display: flex;
+    display: flex !important;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;

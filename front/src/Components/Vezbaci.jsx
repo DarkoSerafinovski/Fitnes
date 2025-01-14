@@ -6,20 +6,21 @@ const Vezbaci = () => {
   const [vezbaci, setVezbaci] = useState([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedVezbac, setSelectedVezbac] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(2); // Broj rezultata po strani
 
   // Dummy podaci za vežbače, kasnije će biti povezano sa backendom
   useEffect(() => {
-    // Ovdje biste pozvali API da dobijete podatke o vežbačima
     const fetchedVezbaci = [
       { id: 1, ime: 'Petar Petrovic', email: 'petar@example.com' },
       { id: 2, ime: 'Ana Anic', email: 'ana@example.com' },
       { id: 3, ime: 'Luka Lukic', email: 'luka@example.com' },
+      { id: 4, ime: 'Mila Milic', email: 'mila@example.com' },
     ];
     setVezbaci(fetchedVezbaci);
   }, []);
 
   const handleDelete = (id) => {
-    // Ovdje implementirate logiku za brisanje vežbača i njegovih podataka sa backend-a
     setVezbaci(vezbaci.filter((vezbac) => vezbac.id !== id));
     setShowDeleteModal(false);
   };
@@ -32,6 +33,19 @@ const Vezbaci = () => {
   const handleCloseModal = () => {
     setShowDeleteModal(false);
     setSelectedVezbac(null);
+  };
+
+  // Logika za paginaciju
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentVezbaci = vezbaci.slice(indexOfFirstItem, indexOfLastItem);
+
+  const totalPages = Math.ceil(vezbaci.length / itemsPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
   };
 
   return (
@@ -48,7 +62,7 @@ const Vezbaci = () => {
             </tr>
           </thead>
           <tbody>
-            {vezbaci.map((vezbac) => (
+            {currentVezbaci.map((vezbac) => (
               <tr key={vezbac.id}>
                 <td>{vezbac.ime}</td>
                 <td>{vezbac.email}</td>
@@ -64,6 +78,33 @@ const Vezbaci = () => {
             ))}
           </tbody>
         </table>
+
+        {/* Navigacija za strane */}
+        <div className="pagination">
+          <button
+            className="page-button"
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            Prethodna
+          </button>
+          {Array.from({ length: totalPages }, (_, index) => (
+            <button
+              key={index}
+              className={`page-button ${currentPage === index + 1 ? 'active' : ''}`}
+              onClick={() => handlePageChange(index + 1)}
+            >
+              {index + 1}
+            </button>
+          ))}
+          <button
+            className="page-button"
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            Sledeća
+          </button>
+        </div>
       </div>
 
       {showDeleteModal && (

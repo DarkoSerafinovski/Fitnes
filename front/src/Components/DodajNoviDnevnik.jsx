@@ -5,12 +5,21 @@ import Navigation from './Navigation';
 const DodajNoviDnevnik = () => {
   const [naziv, setNaziv] = useState('');
   const [opis, setOpis] = useState('');
-  const [slika, setSlika] = useState('');
+  const [slika, setSlika] = useState(null); // Čuva fajl umesto URL-a
+
+  const handleFileChange = (e) => {
+    setSlika(e.target.files[0]); // Postavlja izabranu sliku
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Logika za slanje podataka, može biti slanje na backend ili dodavanje u state
-    console.log('Novi dnevnik:', { naziv, opis, slika });
+    // Logika za slanje podataka
+    console.log('Novi dnevnik:', {
+      naziv,
+      opis,
+      slika: slika ? slika.name : 'Nema slike', // Prikazuje ime fajla
+    });
+    // Ovde dodaj kod za slanje slike na backend ako je potrebno
   };
 
   return (
@@ -41,11 +50,10 @@ const DodajNoviDnevnik = () => {
           <div className="form-group">
             <label htmlFor="slika">Slika Dnevnika:</label>
             <input
-              type="url"
+              type="file"
               id="slika"
-              value={slika}
-              onChange={(e) => setSlika(e.target.value)}
-              placeholder="URL slike"
+              onChange={handleFileChange}
+              accept="image/*" // Prihvata samo slike
               required
             />
           </div>

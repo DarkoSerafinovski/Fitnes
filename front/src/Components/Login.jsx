@@ -1,12 +1,26 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';  // Uvozimo useNavigate
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Uvozimo useNavigate
 import './Login.css';
 
 const Login = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate(); // Inicijalizujemo navigaciju
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // Simulacija prijave - ovde biste implementirali stvarnu logiku autentifikacije
+    if (email === 'test@example.com' && password === '123') {
+      navigate('/muscle-group'); // Preusmeravanje nakon uspešne prijave
+    } else {
+      setError('Neispravan email ili šifra.');
+    }
+  };
+
   const handleSwitchToRegister = () => {
-    navigate('/register');  // Kada kliknemo na dugme, idemo na stranicu za registraciju
+    navigate('/register'); // Prelazak na stranicu za registraciju
   };
 
   return (
@@ -14,12 +28,28 @@ const Login = () => {
       <div className="login-card">
         <h1>Prijavite se</h1>
         <p>Pridružite se zajednici i kreirajte svoje trening planove!</p>
-        <form>
+        <form onSubmit={handleSubmit}>
           <label htmlFor="email">Email</label>
-          <input type="email" id="email" placeholder="Unesite vaš email" required />
+          <input
+            type="email"
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Unesite vaš email"
+            required
+          />
 
           <label htmlFor="password">Šifra</label>
-          <input type="password" id="password" placeholder="Unesite vašu šifru" required />
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Unesite vašu šifru"
+            required
+          />
+
+          {error && <p className="error-text">{error}</p>}
 
           <button type="submit" className="login-btn">Prijavi se</button>
         </form>

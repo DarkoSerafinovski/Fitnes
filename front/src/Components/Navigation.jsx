@@ -9,7 +9,7 @@ const Navigation = ({ role = 'Vezbac' }) => {  // Default role is Vezbac
     // Brisanje svih podataka iz sessionStorage
     sessionStorage.clear();
     // Preusmeravanje na login stranicu
-    navigate('/login');
+    navigate('/');
   };
 
   return (
