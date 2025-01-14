@@ -7,10 +7,9 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\FitnesDnevnik;
 use App\Models\StavkaDnevnika;
 use App\Http\Resources\FitnesDnevnikResource;
-use App\Traits\UploadUtil;
 class FitnesDnevnikController extends Controller
 {
-    use UploadUtil;
+
     public function show($id){
         try{
 
@@ -63,8 +62,6 @@ class FitnesDnevnikController extends Controller
 
             $validated = $request->validate([
                 'kratak_opis' => 'required|string',
-                'slika' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', 
-               
             ]);
 
             $korisnikId = $user->id;
@@ -72,7 +69,6 @@ class FitnesDnevnikController extends Controller
             $dnevnik = FitnesDnevnik::create([
                 'kratak_opis'=>$validated['kratak_opis'],
                 'vezbac_id'=>$korisnikId,
-                'slika'=>$this->upload($request->file('slika'),  'dnevnik_'.now()->toDateTimeString())
             ]);
 
 

@@ -20,7 +20,6 @@ class FitnesDnevnikFactory extends Factory
     {
         return [
             'vezbac_id'=>User::where('role', 'vezbac')->inRandomOrder()->first()->id,
-            'slika'=>$this->faker->imageUrl(640, 480, 'diary',true),
             'kratak_opis'=>$this->faker->paragraph,
         ];
     }
