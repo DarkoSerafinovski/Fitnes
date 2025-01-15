@@ -18,8 +18,9 @@ class VezbaController extends Controller
     {
         try {
             $fajl = Vezba::findOrFail($id);
-            $relativePath = $fajl->putanja;
+            $relativePath = $fajl->video_url;
             $absolutePath = public_path($relativePath);
+            Log::info("Putanja do fajla: " . $absolutePath);
             if (!File::exists($absolutePath)) {
                 return response()->json(['error' => 'Fajl ne postoji'], 404);
             }
@@ -101,6 +102,7 @@ class VezbaController extends Controller
             $validated = $request->validate([
                 'naziv' => 'required|string',
                 'opis' => 'required|string',
+                'slika' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048', 
                 'misici_na_koje_utice' => 'required|string',
                 'savet'=>'required|string',
                 'preporuceni_broj_ponavljanja'=>'required|numeric',
@@ -115,6 +117,7 @@ class VezbaController extends Controller
             $vezba = Vezba::create([
                 'naziv'=>$validated['naziv'],
                 'opis'=>$validated['opis'],
+                'slika'=>$this->upload($request->file('slika'), $validated['naziv']),
                 'misici_na_koje_utice'=>$validated['misici_na_koje_utice'],
                 'savet'=>$validated['savet'],
                 'grupa_misica_id'=>$validated['grupa_misica_id'],
@@ -150,6 +153,7 @@ class VezbaController extends Controller
             $validated = $request->validate([
                 'naziv' => 'required|string',
                 'opis' => 'required|string',
+                'slika' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', 
                 'misici_na_koje_utice' => 'required|string',
                 'savet'=>'required|string',
                 'video' => 'nullable|mimes:mp4',
@@ -179,6 +183,14 @@ class VezbaController extends Controller
                     File::delete($vezba->video_url);
                 }
                $vezba->video_url =  $this->upload($request->file('video'), $validated['naziv']);
+    
+            }
+
+            if ($request->hasFile('slika')) {
+                if (File::exists($vezba->slika)) {
+                    File::delete($vezba->slika);
+                }
+               $vezba->slika =  $this->upload($request->file('slika'), $validated['naziv']);
     
             }
     

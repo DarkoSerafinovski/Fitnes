@@ -1,75 +1,90 @@
 import React, { useState } from 'react';
+import axios from 'axios';  // Dodajte axios za slanje POST zahteva
 import './DodajGrupu.css';
 import Navigation from './Navigation';
+import { useNavigate } from 'react-router-dom';
 
 const DodajGrupu = () => {
   const [naziv, setNaziv] = useState('');
   const [opis, setOpis] = useState('');
   const [slika, setSlika] = useState(null);
+    const navigate = useNavigate();  
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-      setSlika(URL.createObjectURL(file)); // Privremeni URL za prikaz slike
+      setSlika(file); // Čuvanje slike u formi fajla
     }
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    // Logika za slanje podataka na backend ili čuvanje u bazi
-    const newGroup = {
-      naziv,
-      opis,
-      slika,
-    };
+    // Kreiranje FormData objekta za slanje podataka
+    const formData = new FormData();
+    formData.append('naziv', naziv);
+    formData.append('opis', opis);
+    formData.append('slika', slika); // Dodavanje slike u formData
 
-    console.log(newGroup); // Ovo treba zameniti sa pozivom API-ja za slanje podataka
+    try {
+      // Slanje podataka na backend
+      const response = await axios.post('http://localhost:8000/api/grupe-misica', formData, {
+        headers: {
+          'Authorization': "Bearer " + sessionStorage.getItem("auth_token"),
+          'Content-Type': 'multipart/form-data', // Postavljanje odgovarajućeg tipa sadržaja
+        },
+      });
 
-    // Resetovanje forme
-    setNaziv('');
-    setOpis('');
-    setSlika(null);
+      alert('Uspesno sacuvana grupa');
+      // Resetovanje forme nakon uspešnog slanja
+      setNaziv('');
+      setOpis('');
+      setSlika(null);
+      navigate('/muscle-group');
+    } catch (error) {
+      console.error('Greška prilikom slanja podataka:', error);
+    }
   };
 
   return (
-    <div  className="full">
-        <Navigation/>
-        <div className="dodaj-grupu-container">
+    <div className="full">
+      <Navigation />
+      <div className="dodaj-grupu-container">
         <h1>Dodaj Novu Grupu Mišića</h1>
         <form onSubmit={handleSubmit} className="dodaj-grupu-form">
-            <div className="form-group">
+          <div className="form-group">
             <label htmlFor="naziv">Naziv Grupa Mišića</label>
             <input
-                type="text"
-                id="naziv"
-                value={naziv}
-                onChange={(e) => setNaziv(e.target.value)}
-                required
+              type="text"
+              id="naziv"
+              value={naziv}
+              onChange={(e) => setNaziv(e.target.value)}
+              required
             />
-            </div>
-            <div className="form-group">
+          </div>
+          <div className="form-group">
             <label htmlFor="opis">Opis Grupa Mišića</label>
             <textarea
-                id="opis"
-                value={opis}
-                onChange={(e) => setOpis(e.target.value)}
-                required
+              id="opis"
+              value={opis}
+              onChange={(e) => setOpis(e.target.value)}
+              required
             />
-            </div>
-            <div className="form-group">
+          </div>
+          <div className="form-group">
             <label htmlFor="slika">Slika Grupa Mišića</label>
             <input
-                type="file"
-                id="slika"
-                accept="image/*"
-                onChange={handleImageChange}
+              type="file"
+              id="slika"
+              accept="image/*"
+              onChange={handleImageChange}
+              required
             />
-            {slika && <img src={slika} alt="Prethodna slika" className="preview-image" />}
-            </div>
-            <button type="submit" className="submit-button">Dodaj Grupu</button>
+        
+          </div>
+          <button type="submit" className="submit-button">Dodaj Grupu</button>
         </form>
-        </div>
+      </div>
     </div>
   );
 };

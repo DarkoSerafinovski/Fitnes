@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('naziv');
             $table->text('opis');
+            $table->string('slika');
             $table->text('misici_na_koje_utice');
             $table->text('savet');
             $table->integer('preporuceni_broj_serija');

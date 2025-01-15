@@ -19,6 +19,7 @@ class FitnesDnevnikFactory extends Factory
     public function definition(): array
     {
         return [
+            'naslov'=>$this->faker->sentence,
             'vezbac_id'=>User::where('role', 'vezbac')->inRandomOrder()->first()->id,
             'kratak_opis'=>$this->faker->paragraph,
         ];

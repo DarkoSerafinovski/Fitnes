@@ -1,26 +1,42 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Uvozimo useNavigate
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './Login.css';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const navigate = useNavigate(); // Inicijalizujemo navigaciju
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Simulacija prijave - ovde biste implementirali stvarnu logiku autentifikacije
-    if (email === 'test@example.com' && password === '123') {
-      navigate('/muscle-group'); // Preusmeravanje nakon uspešne prijave
-    } else {
-      setError('Neispravan email ili šifra.');
-    }
+    const userData = { email, password };
+
+    axios
+      .post('http://localhost:8000/api/login', userData)
+      .then((response) => {
+        if (response.data.success) {
+          // Čuvanje tokena i korisničkih podataka
+          sessionStorage.setItem('auth_token', response.data.access_token);
+          sessionStorage.setItem('role', response.data.role);
+          sessionStorage.setItem('user_id', response.data.data.id);
+
+          // Preusmeravanje na željenu stranicu
+          navigate('/muscle-group');
+        } else {
+          setError('Neispravan email ili šifra.');
+        }
+      })
+      .catch((err) => {
+        console.error('Greška pri prijavi:', err);
+        setError('Došlo je do greške. Molimo pokušajte ponovo.');
+      });
   };
 
   const handleSwitchToRegister = () => {
-    navigate('/register'); // Prelazak na stranicu za registraciju
+    navigate('/register');
   };
 
   return (

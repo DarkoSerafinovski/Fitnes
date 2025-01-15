@@ -1,53 +1,71 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate,Link } from 'react-router-dom';
+import axios from 'axios';  // Importujemo axios
 import Navigation from './Navigation';
 import './MuscleExercises.css';
-
-const exercisesData = {
-  1: [  // Grudi
-    { id: 1, name: 'Bench Press', type: 'Vezbe sa sipkom', description: 'Vežba za grudi, koristi se šipka.', image: '/images/benchpress.jpg' },
-    { id: 2, name: 'Push-ups', type: 'Calisthenics', description: 'Klasične sklekove za grudi.', image: '/images/pushups.jpg' },
-  ],
-  2: [  // Leđa
-    { id: 3, name: 'Deadlift', type: 'Vezbe sa sipkom', description: 'Vežba za leđa i noge sa šipkom.', image: '/images/deadlift.jpg' },
-    { id: 4, name: 'Pull-ups', type: 'Calisthenics', description: 'Vežba za leđa koristeći telesnu težinu.', image: '/images/pullups.jpg' },
-  ],
-  3: [  // Noge
-    { id: 5, name: 'Squat', type: 'Vezbe sa sipkom', description: 'Vežba za noge sa šipkom.', image: '/images/squat.jpg' },
-    { id: 6, name: 'Leg Press', type: 'Vezbe na masinama', description: 'Vežba za noge na spravi.', image: '/images/legpress.jpg' },
-  ],
-};
 
 const MuscleExercises = () => {
   const { muscleGroupId } = useParams();
   const [filteredExercises, setFilteredExercises] = useState([]);
-  const [selectedType, setSelectedType] = useState('All');
+  const [categories, setCategories] = useState([]); // Kategorije vežbi
+  const [selectedCategory, setSelectedCategory] = useState(''); // Selektovana kategorija
   const [isTrainer, setIsTrainer] = useState(true);
-  const navigate = useNavigate();  // Umesto useHistory
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (muscleGroupId && exercisesData[muscleGroupId]) {
-      setFilteredExercises(exercisesData[muscleGroupId]);
-    }
+    // Učitavanje kategorija kada se komponenta mount-uje
+    axios.get('http://localhost:8000/api/kategorije-vezbe', {
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem('auth_token'),
+      },
+    })
+    .then((response) => {
+      setCategories(response.data.data);  // Postavljamo kategorije
+    })
+    .catch((error) => {
+      console.error('Greška pri učitavanju kategorija:', error);
+    });
 
     // Provera uloge iz sessionStorage
     const role = sessionStorage.getItem('role');
     if (role === 'trener') {
       setIsTrainer(true);
     }
+
+    loadExercises();
   }, [muscleGroupId]);
 
+
+  const loadExercises = () => {
+    const params = selectedCategory ? { kategorija_id: selectedCategory } : {};  // Dodajemo parametar ako je selektovana kategorija
+
+    axios.get(`http://localhost:8000/api/grupe-misica/${muscleGroupId}`, {
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem('auth_token'),
+      },
+      params,
+    })
+    .then((response) => {
+      setFilteredExercises(response.data.data.vezbe);  // Postavljamo vežbe
+    })
+    .catch((error) => {
+      console.error('Greška pri učitavanju vežbi:', error);
+    });
+  };
+
+  // Funkcija za promenu selektovane kategorije
+  const handleCategoryChange = (e) => {
+    setSelectedCategory(e.target.value);
+  };
+
+  // Funkcija za filtriranje vežbi prema vrsti
   const handleFilterChange = (e) => {
-    setSelectedType(e.target.value);
+    setSelectedCategory(e.target.value);
   };
 
-  const filteredData = selectedType === 'All' 
-    ? filteredExercises 
-    : filteredExercises.filter(exercise => exercise.type === selectedType);
-
-  const handleAddExercise = () => {
-    navigate('/dodaj-vezbu');  // Redirektovanje na stranicu za dodavanje vežbe
-  };
+  useEffect(() => {
+    loadExercises();  // Ponovno učitavanje vežbi kad se promeni kategorija
+  }, [selectedCategory, muscleGroupId]);
 
   return (
     <>
@@ -55,26 +73,27 @@ const MuscleExercises = () => {
       <div className="exercises-container">
         <div className="sidebar">
           <h3>Filter vežbi</h3>
-          <select onChange={handleFilterChange} value={selectedType}>
-            <option value="All">Sve</option>
-            <option value="Calisthenics">Calisthenics</option>
-            <option value="Vezbe sa bucicama">Vezbe sa bucicama</option>
-            <option value="Vezbe sa sipkom">Vezbe sa sipkom</option>
-            <option value="Vezbe na masinama">Vezbe na masinama</option>
+          <select onChange={handleCategoryChange} value={selectedCategory}>
+            <option value="">Sve</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.naziv}
+              </option>
+            ))}
           </select>
         </div>
 
         <div className="exercises-list">
           <h1>Vežbe za Grupu Mišića</h1>
           {isTrainer && (
-            <button className="add-exercise-btn" onClick={handleAddExercise}>Dodaj Vezbu</button>
+            <button className="add-exercise-btn" onClick={() => navigate('/dodaj-vezbu', { state: { muscleGroupId } })}>Dodaj Vezbu</button>
           )}
           <div className="exercise-cards">
-            {filteredData.map((exercise) => (
+            {filteredExercises.map((exercise) => (
               <div key={exercise.id} className="exercise-card">
-                <img src={exercise.image} alt={exercise.name} className="exercise-image" />
-                <h3>{exercise.name}</h3>
-                <p>{exercise.description}</p>
+                <img src={exercise.slika} alt={exercise.naziv} className="exercise-image" />
+                <h3>{exercise.naziv}</h3>
+                <p>{exercise.opis}</p>
                 <Link to={`/exercise/${exercise.id}`} className="details-link">Pogledaj detalje</Link>
               </div>
             ))}

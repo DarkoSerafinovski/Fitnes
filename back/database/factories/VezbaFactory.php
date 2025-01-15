@@ -24,6 +24,7 @@ class VezbaFactory extends Factory
         return [
             'naziv' => $this->faker->word,
             'opis' => $this->faker->paragraph,
+            'slika'=>'images/' . $this->faker->word . '.jpg',
             'misici_na_koje_utice' => $this->faker->sentence,
             'savet'=>$this->faker->sentence,
             'preporuceni_broj_ponavljanja' => $this->faker->numberBetween(1, 5),

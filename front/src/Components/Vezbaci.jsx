@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import Navigation from './Navigation';
 import './Vezbaci.css';
 
@@ -8,40 +9,52 @@ const Vezbaci = () => {
   const [selectedVezbac, setSelectedVezbac] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(2); // Broj rezultata po strani
+  const [totalPages, setTotalPages] = useState(1);
 
-  // Dummy podaci za vežbače, kasnije će biti povezano sa backendom
+  // Učitavanje vežbača sa servera
   useEffect(() => {
-    const fetchedVezbaci = [
-      { id: 1, ime: 'Petar Petrovic', email: 'petar@example.com' },
-      { id: 2, ime: 'Ana Anic', email: 'ana@example.com' },
-      { id: 3, ime: 'Luka Lukic', email: 'luka@example.com' },
-      { id: 4, ime: 'Mila Milic', email: 'mila@example.com' },
-    ];
-    setVezbaci(fetchedVezbaci);
-  }, []);
+    const fetchVezbaci = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8000/api/vezbaci?page=${currentPage}`,
+          {
+            headers: {
+              Authorization: 'Bearer ' + sessionStorage.getItem('auth_token'),
+            },
+          }
+        );
+        setVezbaci(response.data.data); // Paginirani podaci
+        setTotalPages(response.data.meta.last_page); // Ukupan broj stranica
+      } catch (error) {
+        console.error('Greška prilikom učitavanja vežbača:', error);
+      }
+    };
 
-  const handleDelete = (id) => {
-    setVezbaci(vezbaci.filter((vezbac) => vezbac.id !== id));
-    setShowDeleteModal(false);
+    fetchVezbaci();
+  }, [currentPage]);
+
+  // Brisanje vežbača
+  const handleDelete = async (id) => {
+  
+
+    try {
+      await axios.delete(`http://localhost:8000/api/vezbaci/${id}`, {
+        headers: {
+          Authorization: 'Bearer ' + sessionStorage.getItem('auth_token'),
+        },
+      });
+
+      // Osveži listu vežbača nakon brisanja
+      setVezbaci(vezbaci.filter((vezbac) => vezbac.id !== id));
+      setSelectedVezbac(null);
+      alert('Vežbač je uspešno obrisan.');
+    } catch (error) {
+      console.error('Greška prilikom brisanja vežbača:', error);
+      alert('Došlo je do greške prilikom brisanja vežbača.');
+    }
   };
 
-  const handleShowModal = (vezbac) => {
-    setSelectedVezbac(vezbac);
-    setShowDeleteModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setShowDeleteModal(false);
-    setSelectedVezbac(null);
-  };
-
-  // Logika za paginaciju
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentVezbaci = vezbaci.slice(indexOfFirstItem, indexOfLastItem);
-
-  const totalPages = Math.ceil(vezbaci.length / itemsPerPage);
-
+  // Promena stranice
   const handlePageChange = (pageNumber) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
@@ -62,14 +75,14 @@ const Vezbaci = () => {
             </tr>
           </thead>
           <tbody>
-            {currentVezbaci.map((vezbac) => (
+            {vezbaci.map((vezbac) => (
               <tr key={vezbac.id}>
-                <td>{vezbac.ime}</td>
+                <td>{vezbac.username}</td>
                 <td>{vezbac.email}</td>
                 <td>
                   <button
                     className="delete-button"
-                    onClick={() => handleShowModal(vezbac)}
+                    onClick={() => setSelectedVezbac(vezbac)}
                   >
                     Obriši
                   </button>
@@ -107,13 +120,14 @@ const Vezbaci = () => {
         </div>
       </div>
 
-      {showDeleteModal && (
+      {/* Modal za potvrdu brisanja */}
+      {selectedVezbac && (
         <div className="modal-overlay">
           <div className="modal-content">
             <h3>Upozorenje</h3>
             <p>
               Da li ste sigurni da želite da obrišete vežbača{' '}
-              <strong>{selectedVezbac?.ime}</strong>? Ovim će biti obrisani
+              <strong>{selectedVezbac.username}</strong>? Ovim će biti obrisani
               svi njegovi planovi treninga.
             </p>
             <button
@@ -122,7 +136,7 @@ const Vezbaci = () => {
             >
               Potvrdi Brisanje
             </button>
-            <button className="cancel-button" onClick={handleCloseModal}>
+            <button className="cancel-button" onClick={() => setSelectedVezbac(null)}>
               Otkaži
             </button>
           </div>

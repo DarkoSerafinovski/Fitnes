@@ -29,7 +29,7 @@ class FitnesDnevnikController extends Controller
                 ], 403); 
             }
 
-           
+            $dnevnik->stavkeDnevnika = $dnevnik->stavkeDnevnika->sortByDesc('datum');
             return new FitnesDnevnikResource($dnevnik);
 
              
@@ -61,12 +61,14 @@ class FitnesDnevnikController extends Controller
             
 
             $validated = $request->validate([
+                'naslov' => 'required|string',
                 'kratak_opis' => 'required|string',
             ]);
 
             $korisnikId = $user->id;
 
             $dnevnik = FitnesDnevnik::create([
+                'naslov'=>$validated['naslov'],
                 'kratak_opis'=>$validated['kratak_opis'],
                 'vezbac_id'=>$korisnikId,
             ]);

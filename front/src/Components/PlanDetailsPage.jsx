@@ -1,80 +1,89 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './PlanDetailsPage.css';
 import Navigation from './Navigation';
 
 const PlanDetailsPage = () => {
   const { planId } = useParams(); // Dohvatamo ID plana iz URL-a
   const navigate = useNavigate();
+  const [planDetails, setPlanDetails] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Simulacija podataka
-  const userPlans = [
-    {
-      id: 1,
-      date: '2025-01-10',
-      name: 'Plan za jačanje nogu',
-      exercises: [
-        { id: 5, name: 'Čučnjevi', sets: 4, reps: 12 },
-        { id: 7, name: 'Iskoraci', sets: 3, reps: 10 },
-        { id: 6, name: 'Leg Press', sets: 4, reps: 15 },
-      ],
-    },
-    {
-      id: 2,
-      date: '2025-01-08',
-      name: 'Plan za gornji deo tela',
-      exercises: [
-        { id: 1, name: 'Bench Press', sets: 4, reps: 8 },
-        { id: 4, name: 'Zgibovi', sets: 3, reps: 10 },
-        { id: 8, name: 'Rameni Potisak', sets: 4, reps: 12 },
-      ],
-    },
-    {
-      id: 3,
-      date: '2025-01-05',
-      name: 'Kardio i izdržljivost',
-      exercises: [
-        { id: 'running', name: 'Trčanje', sets: 1, reps: 5 },
-        { id: 'plank', name: 'Plank', sets: 3, reps: 60 },
-        { id: 'burpees', name: 'Burpees', sets: 3, reps: 15 },
-      ],
-    },
-  ];
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const options = {
+      weekday: 'long', // Ponedeljak
+      year: 'numeric', // 2025
+      month: 'long',   // mart
+      day: 'numeric',  // 14
+    };
+    return new Intl.DateTimeFormat('sr-RS', options).format(date);
+  };
 
-  // Pronađi plan na osnovu planId
-  const selectedPlan = userPlans.find((plan) => plan.id === parseInt(planId));
 
-  if (!selectedPlan) {
+  useEffect(() => {
+    // Funkcija za dobavljanje podataka o planu
+    const fetchPlanDetails = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8000/api/plan-treninga/${planId}`, {
+          headers: {
+            'Authorization': `Bearer ${sessionStorage.getItem('auth_token')}`, // Pretpostavljamo da je token u lokalnom skladištu
+          },
+        });
+        setPlanDetails(response.data.data);
+        setLoading(false);
+      } catch (err) {
+        setError('Greška prilikom učitavanja podataka!');
+        setLoading(false);
+      }
+    };
+
+    fetchPlanDetails();
+  }, [planId]);
+
+  // Ako su podaci u procesu učitavanja
+  if (loading) {
+    return <p>Učitavanje...</p>;
+  }
+
+  // Ako dođe do greške
+  if (error) {
+    return <p>{error}</p>;
+  }
+
+  // Ako plan nije pronađen
+  if (!planDetails) {
     return <p>Plan nije pronađen!</p>;
   }
 
   return (
     <>
-        <Navigation/>
-        <div className="plan-details-page">
-      <h1>{selectedPlan.name}</h1>
-      <p><strong>Datum:</strong> {selectedPlan.date}</p>
-      <h2>Vežbe:</h2>
-      <div className="exercises-list">
-        {selectedPlan.exercises.map((exercise) => (
-          <div key={exercise.id} className="exercise-item">
-            <a 
-              href={`/exercise/${exercise.id}`} 
-              className="exercise-link"
-            >
-              {exercise.name}
-            </a>
-            <p><strong>Serije:</strong> {exercise.sets}</p>
-            <p><strong>Ponavljanja:</strong> {exercise.reps}</p>
-          </div>
-        ))}
+      <Navigation />
+      <div className="plan-details-page">
+        <h1>{planDetails.naziv}</h1>
+        <p><strong>Datum:</strong> {formatDate(planDetails.datum)}</p>
+        <h2>Vežbe:</h2>
+        <div className="exercises-list">
+          {planDetails.planovi_vezbi.map((exercise) => (
+            <div key={exercise.id} className="exercise-item">
+              <a 
+                href={`/exercise/${exercise.vezba.id}`} 
+                className="exercise-link"
+              >
+                {exercise.vezba.naziv}
+              </a>
+              <p><strong>Serije:</strong> {exercise.broj_serija}</p>
+              <p><strong>Ponavljanja:</strong> {exercise.broj_ponavljanja}</p>
+            </div>
+          ))}
+        </div>
+        <button className="back-btn" onClick={() => navigate(-1)}>
+          Nazad
+        </button>
       </div>
-      <button className="back-btn" onClick={() => navigate(-1)}>
-        Nazad
-      </button>
-    </div>
     </>
-    
   );
 };
 

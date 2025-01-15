@@ -1,22 +1,32 @@
-import React from 'react';
+import React,{ useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom'; // useNavigate za preusmeravanje
 import './Navigation.css';
 
-const Navigation = ({ role = 'Vezbac' }) => {  // Default role is Vezbac
-  const navigate = useNavigate(); // useNavigate za preusmeravanje
-
+const Navigation = () => {  // Default role is Vezbac
+  const navigate = useNavigate(); 
+  const [role, setRole] = useState('Vezbac'); /// useNavigate za preusmeravanje
   const handleLogout = () => {
     // Brisanje svih podataka iz sessionStorage
     sessionStorage.clear();
-    // Preusmeravanje na login stranicu
+
     navigate('/');
   };
+
+
+  useEffect(() => {
+    const role = sessionStorage.getItem("role");
+    if (role) {
+      setRole(role);
+    }
+    
+  }, [role]);
+
 
   return (
     <nav className="navigation">
       <div className="nav-left">
         <ul>
-          {role === 'Admin' && (
+          {role === 'admin' && (
             <>
               <li><Link to="/muscle-group">Grupe Mišića</Link></li>
               <li><Link to="/add-group">Dodaj Grupu</Link></li>
@@ -24,13 +34,13 @@ const Navigation = ({ role = 'Vezbac' }) => {  // Default role is Vezbac
               <li><Link to="/vezbaci">Vežbači</Link></li>
             </>
           )}
-          {role === 'Trener' && (
+          {role === 'trener' && (
             <>
               <li><Link to="/muscle-group">Grupe Mišića</Link></li>
               <li><Link to="/youtube">YouTube</Link></li>
             </>
           )}
-          {role === 'Vezbac' && (
+          {role === 'vezbac' && (
             <>
               <li><Link to="/muscle-group">Grupe Mišića</Link></li>
               <li><Link to="/kreiraj-plan">Sastavi Plan</Link></li>
@@ -48,5 +58,4 @@ const Navigation = ({ role = 'Vezbac' }) => {  // Default role is Vezbac
     </nav>
   );
 };
-
 export default Navigation;

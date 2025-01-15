@@ -8,6 +8,7 @@ use App\Http\Controllers\FitnesDnevnikController;
 use App\Http\Controllers\GrupaMisicaController;
 use App\Http\Controllers\VezbaController;
 use App\Http\Controllers\PlanTreningaController;
+use App\Http\Controllers\KategorijaVezbeController;
 
 
 
@@ -44,6 +45,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/vezbe',[VezbaController::class,'store']);
     Route::put('/vezbe/{id}',[VezbaController::class,'update']);
 
+
+
+    Route::get('/kategorije-vezbe',[KategorijaVezbeController::class,'index']);
 
    
     Route::get('/plan-treninga',[PlanTreningaController::class,'index']);

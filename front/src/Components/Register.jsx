@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./Register.css";
 
 const Register = () => {
@@ -9,9 +10,10 @@ const Register = () => {
     email: "",
     password: "",
     confirmPassword: "",
-    role: "Vezbac", // Defaultna uloga
+    role: "vezbac", // Defaultna uloga mora biti mala slova
   });
   const [error, setError] = useState(""); // Stanje za greške
+  const [successMessage, setSuccessMessage] = useState(""); // Stanje za uspeh
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,12 +32,26 @@ const Register = () => {
     // Resetovanje greške ako je sve u redu
     setError("");
 
-    // Logika za registraciju (trenutno samo simulacija)
-    console.log("Podaci o registraciji:", formData);
-
-    // Prikaz poruke i preusmeravanje na login
-    alert("Uspešno ste se registrovali! Sada se možete prijaviti.");
-    navigate("/");
+    // Slanje podataka na backend
+    axios
+      .post("http://localhost:8000/api/register", {
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        role: formData.role.toLowerCase(), // Konverzija uloge u mala slova
+      })
+      .then((response) => {
+        if (response.data.success) {
+            navigate("/"); 
+        }
+      })
+      .catch((error) => {
+        if (error.response && error.response.data) {
+          setError(error.response.data.message || "Došlo je do greške. Pokušajte ponovo.");
+        } else {
+          setError("Došlo je do greške. Pokušajte ponovo.");
+        }
+      });
   };
 
   return (
@@ -80,11 +96,12 @@ const Register = () => {
           onChange={handleChange}
           required
         >
-          <option value="Trener">Trener</option>
-          <option value="Vezbac">Vežbač</option>
+          <option value="trener">Trener</option>
+          <option value="vezbac">Vežbač</option>
         </select>
 
-        {error && <p className="error-message">{error}</p>} {/* Prikaz greške */}
+        {error && <p className="error-message">{error}</p>}
+        {successMessage && <p className="success-message">{successMessage}</p>}
 
         <button type="submit" className="register-btn">
           Registruj se

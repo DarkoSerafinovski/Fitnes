@@ -10,6 +10,7 @@
   
   .dodaj-aktivnost-container h1 {
     font-size: 2rem;
+    color: black !important;
     font-weight: bold;
     margin-bottom: 1.5rem;
     text-align: center;

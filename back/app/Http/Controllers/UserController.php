@@ -22,7 +22,9 @@ class UserController extends Controller
             }
 
             $korisnikId = $user->id;
-            $dnevnici = FitnesDnevnik::where('vezbac_id', $korisnikId)->paginate(5);
+            $dnevnici = FitnesDnevnik::where('vezbac_id', $korisnikId)
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
             return FitnesDnevnikResource::collection($dnevnici);
         }catch (\Exception $e) {
          
@@ -45,7 +47,7 @@ class UserController extends Controller
                 ], 403); 
             }
 
-            $treneri = User::where('role', 'trener')->paginate(10);
+            $treneri = User::where('role', 'trener')->paginate(5);
             return UserResource::collection($treneri);
             
          
@@ -109,7 +111,7 @@ class UserController extends Controller
                 ], 403); 
             }
 
-            $vezbaci = User::where('role', 'vezbac')->paginate(10);
+            $vezbaci = User::where('role', 'vezbac')->paginate(5);
             return UserResource::collection($vezbaci);
             
          

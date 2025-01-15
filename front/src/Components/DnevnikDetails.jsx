@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './DnevnikDetails.css';
 import Navigation from './Navigation';
+import axios from 'axios';
 
 const DnevnikDetails = () => {
   const { dnevnikId } = useParams();
@@ -9,32 +10,24 @@ const DnevnikDetails = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Simulacija učitavanja aktivnosti iz backend-a
-    const dnevnikAktivnosti = [
-      {
-        id: 1,
-        naziv: 'Trčanje',
-        komentar: 'Brzo trčanje na stazi 5 km.',
-        datum: '2025-01-06',
-      },
-      {
-        id: 2,
-        naziv: 'Push-up vežbe',
-        komentar: 'Napravio sam 50 sklekova.',
-        datum: '2025-01-05',
-      },
-      {
-        id: 3,
-        naziv: 'Čučnjevi',
-        komentar: 'Obavio sam 3 serije po 20 čučnjeva.',
-        datum: '2025-01-04',
-      },
-      // ...dodaj ostale aktivnosti
-    ];
+    // Funkcija za učitavanje aktivnosti iz backend-a
+    const fetchAktivnosti = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8000/api/dnevnici/${dnevnikId}`, {
+          headers: {
+            'Authorization': 'Bearer ' + sessionStorage.getItem('auth_token'),
+          }
+        });
 
-    // Sortiranje aktivnosti po datumu
-    setAktivnosti(dnevnikAktivnosti.sort((a, b) => new Date(b.datum) - new Date(a.datum)));
-  }, [dnevnikId]);
+        // Postavljanje aktivnosti u stanje
+        setAktivnosti(response.data.data.stavke_dnevnika);
+      } catch (error) {
+        console.error('Error loading aktivnosti:', error);
+      }
+    };
+
+    fetchAktivnosti();
+  }, [dnevnikId]); // Učitaj ponovo ako se dnevnikId promeni
 
   const handleDodajAktivnost = () => {
     navigate(`/dodaj-aktivnost/${dnevnikId}`);
@@ -54,7 +47,7 @@ const DnevnikDetails = () => {
           ) : (
             aktivnosti.map((aktivnost) => (
               <div key={aktivnost.id} className="aktivnost-card">
-                <h3>{aktivnost.naziv}</h3>
+                <h3>{aktivnost.naziv_aktivnosti}</h3>
                 <p>{aktivnost.komentar}</p>
                 <small>{new Date(aktivnost.datum).toLocaleDateString()}</small>
               </div>

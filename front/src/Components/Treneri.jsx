@@ -1,36 +1,62 @@
-import React, { useState, useEffect } from 'react';
-import Navigation from './Navigation';
-import './Treneri.css';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import Navigation from "./Navigation";
+import "./Treneri.css";
 
 const Treneri = () => {
   const [treneri, setTreneri] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(2); // Broj trenera po stranici
+  const [totalPages, setTotalPages] = useState(1);
 
-  // Dummy podaci za trenere, kasnije će biti povezano sa backendom
+  // Učitavanje trenera sa servera
   useEffect(() => {
-    const fetchedTreneri = [
-      { id: 1, ime: 'Marko Marković', email: 'marko@example.com' },
-      { id: 2, ime: 'Jovana Jovanović', email: 'jovana@example.com' },
-      { id: 3, ime: 'Nikola Nikolić', email: 'nikola@example.com' },
-      { id: 4, ime: 'Ana Anić', email: 'ana@example.com' },
-      { id: 5, ime: 'Milan Milovanović', email: 'milan@example.com' },
-    ];
-    setTreneri(fetchedTreneri);
-  }, []);
+    const fetchTreneri = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8000/api/treneri?page=${currentPage}`,
+          {
+            headers: {
+              Authorization: "Bearer " + sessionStorage.getItem("auth_token"),
+            },
+          }
+        );
+        setTreneri(response.data.data); // Paginirani podaci
+        setTotalPages(response.data.meta.last_page); // Ukupan broj stranica
+      } catch (error) {
+        console.error("Greška prilikom učitavanja trenera:", error);
+      }
+    };
 
-  // Logika za brisanje trenera
-  const handleDelete = (id) => {
-    setTreneri(treneri.filter((trener) => trener.id !== id));
+    fetchTreneri();
+  }, [currentPage]);
+
+  // Brisanje trenera
+  const handleDelete = async (id) => {
+    const confirmed = window.confirm(
+      "Da li ste sigurni da želite da obrišete ovog trenera?"
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await axios.delete(`http://localhost:8000/api/treneri/${id}`, {
+        headers: {
+          Authorization: "Bearer " + sessionStorage.getItem("auth_token"),
+        },
+      });
+
+      // Osveži listu trenera nakon brisanja
+      setTreneri(treneri.filter((trener) => trener.id !== id));
+      alert("Trener je uspešno obrisan.");
+    } catch (error) {
+      console.error("Greška prilikom brisanja trenera:", error);
+      alert("Došlo je do greške prilikom brisanja trenera.");
+    }
   };
 
-  // Logika za paginaciju
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = treneri.slice(indexOfFirstItem, indexOfLastItem);
-
-  const totalPages = Math.ceil(treneri.length / itemsPerPage);
-
+  // Promena stranice
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
@@ -43,18 +69,23 @@ const Treneri = () => {
         <table className="treneri-table">
           <thead>
             <tr>
-              <th>Ime</th>
+              <th>Korisničko ime</th>
               <th>Email</th>
-              <th>Brisanje</th>
+              <th>Datum registracije</th>
+              <th>Akcije</th>
             </tr>
           </thead>
           <tbody>
-            {currentItems.map((trener) => (
+            {treneri.map((trener) => (
               <tr key={trener.id}>
-                <td>{trener.ime}</td>
+                <td>{trener.username}</td>
                 <td>{trener.email}</td>
+                <td>{trener.datum_registracije}</td>
                 <td>
-                  <button className="delete-button" onClick={() => handleDelete(trener.id)}>
+                  <button
+                    className="delete-button"
+                    onClick={() => handleDelete(trener.id)}
+                  >
                     Obriši
                   </button>
                 </td>
@@ -75,7 +106,9 @@ const Treneri = () => {
           {Array.from({ length: totalPages }, (_, index) => (
             <button
               key={index + 1}
-              className={`pagination-button ${currentPage === index + 1 ? 'active' : ''}`}
+              className={`pagination-button ${
+                currentPage === index + 1 ? "active" : ""
+              }`}
               onClick={() => handlePageChange(index + 1)}
             >
               {index + 1}

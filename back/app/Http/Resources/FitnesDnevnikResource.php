@@ -16,6 +16,7 @@ class FitnesDnevnikResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'naslov'=>$this->naslov,
             'kratak_opis' => $this->kratak_opis,
             'stavke_dnevnika'=>StavkaDnevnikaResource::collection($this->stavkeDnevnika),
         ];

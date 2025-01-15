@@ -18,6 +18,7 @@ class VezbaResource extends JsonResource
             'id' => $this->id,
             'naziv' => $this->naziv,
             'opis' => $this->opis,
+            'slika'=>asset($this->slika),
             'misici_na_koje_utice'=>$this->misici_na_koje_utice,
             'savet'=>$this->savet,
             'preporuceni_broj_serija'=>$this->preporuceni_broj_serija,

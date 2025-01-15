@@ -11,6 +11,7 @@ class FitnesDnevnik extends Model
 
 
     protected $fillable = [
+        'naslov',
         'vezbac_id',
         'kratak_opis',
     ];

@@ -1,25 +1,45 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import './DodajNoviDnevnik.css';
 import Navigation from './Navigation';
 
 const DodajNoviDnevnik = () => {
-  const [naziv, setNaziv] = useState('');
-  const [opis, setOpis] = useState('');
-  const [slika, setSlika] = useState(null); // Čuva fajl umesto URL-a
+  const [naslov, setNaslov] = useState('');
+  const [kratakOpis, setKratakOpis] = useState('');
+  const [loading, setLoading] = useState(false); // Dodajte loading stanje
+  const [error, setError] = useState(null); // Dodajte error stanje
+  const [success, setSuccess] = useState(null); // Dodajte success stanje
 
-  const handleFileChange = (e) => {
-    setSlika(e.target.files[0]); // Postavlja izabranu sliku
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Logika za slanje podataka
-    console.log('Novi dnevnik:', {
-      naziv,
-      opis,
-      slika: slika ? slika.name : 'Nema slike', // Prikazuje ime fajla
-    });
-    // Ovde dodaj kod za slanje slike na backend ako je potrebno
+
+    // Postavite loading na true dok traje slanje zahteva
+    setLoading(true);
+    setError(null); // Reset error
+
+    try {
+      const response = await axios.post(
+        'http://localhost:8000/api/dnevnici',  // Koristite odgovarajući URL
+        {
+          naslov,
+          kratak_opis: kratakOpis,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${window.sessionStorage.getItem('auth_token')}`,
+          },
+        }
+      );
+
+      setSuccess('Dnevnik uspešno dodat!');
+      setNaslov('');  // Resetujte formu
+      setKratakOpis('');
+    } catch (err) {
+      setError('Došlo je do greške prilikom dodavanja dnevnika.');
+      console.error(err);
+    } finally {
+      setLoading(false); // Završite sa loading-om
+    }
   };
 
   return (
@@ -29,36 +49,31 @@ const DodajNoviDnevnik = () => {
         <h1>Dodaj Novi Dnevnik</h1>
         <form onSubmit={handleSubmit} className="dodaj-dnevnik-form">
           <div className="form-group">
-            <label htmlFor="naziv">Naziv Dnevnika:</label>
+            <label htmlFor="naslov">Naslov Dnevnika:</label>
             <input
               type="text"
-              id="naziv"
-              value={naziv}
-              onChange={(e) => setNaziv(e.target.value)}
+              id="naslov"
+              value={naslov}
+              onChange={(e) => setNaslov(e.target.value)}
               required
             />
           </div>
           <div className="form-group">
-            <label htmlFor="opis">Kratak Opis:</label>
+            <label htmlFor="kratakOpis">Kratak Opis:</label>
             <textarea
-              id="opis"
-              value={opis}
-              onChange={(e) => setOpis(e.target.value)}
+              id="kratakOpis"
+              value={kratakOpis}
+              onChange={(e) => setKratakOpis(e.target.value)}
               required
             />
           </div>
-          <div className="form-group">
-            <label htmlFor="slika">Slika Dnevnika:</label>
-            <input
-              type="file"
-              id="slika"
-              onChange={handleFileChange}
-              accept="image/*" // Prihvata samo slike
-              required
-            />
-          </div>
-          <button type="submit" className="submit-btn">Dodaj Dnevnik</button>
+          <button type="submit" className="submit-btn" disabled={loading}>
+            {loading ? 'Dodavanje...' : 'Dodaj Dnevnik'}
+          </button>
         </form>
+
+        {error && <p className="error-message">{error}</p>}
+        {success && <p className="success-message">{success}</p>}
       </div>
     </>
   );

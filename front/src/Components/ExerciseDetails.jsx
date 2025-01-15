@@ -1,34 +1,58 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import Navigation from './Navigation';
 import './ExerciseDetails.css';
 
-const exercisesDetailsData = {
-  1: { 
-    name: 'Bench Press', 
-    description: 'Vežba za grudi, koristi se šipka. Izvoditi sa partnerom za sigurnost.', 
-    musclesTargeted: 'Pectorals (grudi), Triceps, Deltoids', 
-    tips: 'Pazite na pravilno disanje, nemojte spuštati šipku previše nisko. Preporučena početna kilaža za početnike je 40-50kg.',
-    setsReps: '3 serije po 10 ponavljanja.',
-    video: '/videos/benchpress.mp4',
-    image: '/images/benchpress.jpg'
-  },
-  2: { 
-    name: 'Push-ups', 
-    description: 'Klasične sklekove za grudi. Vrlo efikasna vežba za razvoj grudi i tricepsa.', 
-    musclesTargeted: 'Pectorals, Triceps, Deltoids', 
-    tips: 'Održavajte ravnu liniju tela, kontrolisano spuštajte i podizite telo.',
-    setsReps: '4 serije po 15-20 ponavljanja.',
-    video: '/videos/pushups.mp4',
-    image: '/images/pushups.jpg'
-  },
-  // Dodajte ostale vežbe...
-};
-
 const ExerciseDetails = () => {
   const { exerciseId } = useParams();
-  const exercise = exercisesDetailsData[exerciseId];
+  const [exercise, setExercise] = useState(null); // Držimo podatke o vežbi
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [videoUrl, setVideoUrl] = useState(null);
   const navigate = useNavigate();
+
+  // Učitavanje podataka o vežbi
+  useEffect(() => {
+    const fetchExercise = async () => {
+      try {
+        // Poziv API-ja za dobijanje podataka o vežbi
+        let response = await axios.get(`http://localhost:8000/api/vezbe/${exerciseId}`, {
+          headers: {
+            Authorization: `Bearer ${window.sessionStorage.getItem('auth_token')}`,
+          },
+        });
+
+        const exerciseData = response.data.data;
+        setExercise(exerciseData);
+        console.log(exerciseData);
+        // Učitavanje video fajla
+        response = await axios.get(exerciseData.video_url, {
+          headers: {
+            Authorization: `Bearer ${window.sessionStorage.getItem('auth_token')}`,
+          },
+          responseType: "blob", // Za video
+        });
+
+        const fileUrl = URL.createObjectURL(response.data);
+        setVideoUrl(fileUrl);
+      } catch (err) {
+        setError('Greška prilikom učitavanja podataka');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchExercise();
+  }, [exerciseId]);
+
+  if (loading) {
+    return <div>Učitavanje...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   if (!exercise) {
     return (
@@ -44,29 +68,34 @@ const ExerciseDetails = () => {
     <>
       <Navigation />
       <div className="exercise-details-container">
-        <h1>{exercise.name}</h1>
-        <img src={exercise.image} alt={exercise.name} className="exercise-image" />
-        <p>{exercise.description}</p>
+        <h1>{exercise.naziv}</h1>
+        <img src={exercise.slika} alt={exercise.naziv} className="exercise-image" />
+        <p>{exercise.opis}</p>
 
         <div className="exercise-info">
           <h2>Mišići na koje utiče:</h2>
-          <p>{exercise.musclesTargeted}</p>
-          
+          <p>{exercise.misici_na_koje_utice}</p>
+
           <h2>Savet:</h2>
           <div className="tips">
-            <p>{exercise.tips}</p>
+            <p>{exercise.savet}</p>
           </div>
-          
-          <h2>Broj serija i ponavljanja:</h2>
+
+        
+
+          <h2>Preporučeni broj serija i ponavljanja:</h2>
           <div className="sets-reps">
-            <p>{exercise.setsReps}</p>
-          </div>
-          
+          <p>{exercise.preporuceni_broj_serija} serija, {exercise.preporuceni_broj_ponavljanja} ponavljanja</p>
+        </div>
           <h2>Video uputstvo:</h2>
-          <video controls>
-            <source src={exercise.video} type="video/mp4" />
-            Vaš preglednik ne podržava video tag.
-          </video>
+          {videoUrl ? (
+            <video controls>
+              <source src={videoUrl} type="video/mp4" />
+              Vaš preglednik ne podržava video tag.
+            </video>
+          ) : (
+            <p>Video nije dostupan</p>
+          )}
         </div>
       </div>
     </>

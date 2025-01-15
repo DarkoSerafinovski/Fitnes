@@ -12,6 +12,7 @@ class Vezba extends Model
     protected $fillable = [
         'naziv',
         'opis',
+        'slika',
         'misici_na_koje_utice',
         'savet',
         'preporuceni_broj_serija',

@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('fitnes_dnevnici', function (Blueprint $table) {
             $table->id();
+            $table->string('naslov');
             $table->foreignId('vezbac_id')->constrained('users')->onDelete('cascade');
             $table->text('kratak_opis');
             $table->timestamps();

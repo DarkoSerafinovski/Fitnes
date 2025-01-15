@@ -26,7 +26,7 @@ class GrupaMisicaController extends Controller
             $validated = $request->validate([
                 'naziv' => 'required|string',
                 'opis'=>'required|string',
-                'slika' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',  
+                'slika' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',  
             ]);
 
             $korisnikId = $user->id;
